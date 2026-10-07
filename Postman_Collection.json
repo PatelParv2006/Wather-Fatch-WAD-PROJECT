@@ -1,0 +1,348 @@
+{
+  "info": {
+    "_postman_id": "7a35c100-8802-46bb-8640-79ea7303cbe1",
+    "name": "Weather Dashboard API - Lab Exp 10",
+    "description": "Complete Postman collection for Weather Dashboard API testing. Includes Authentication, Weather endpoints, and Favourite City CRUD operations.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "favouriteId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "1.1 Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Parv Patel\",\n  \"email\": \"parv@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "1.2 Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.data && response.data.token) {",
+                  "    pm.collectionVariables.set('authToken', response.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"parv@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "1.3 Get Current User Profile (Protected)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Weather Endpoints",
+      "item": [
+        {
+          "name": "2.1 Get Current Weather (Metric)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/weather?city=Ahmedabad&unit=metric",
+              "host": ["{{baseUrl}}"],
+              "path": ["weather"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Ahmedabad"
+                },
+                {
+                  "key": "unit",
+                  "value": "metric"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.2 Get Current Weather (Imperial)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/weather?city=Ahmedabad&unit=imperial",
+              "host": ["{{baseUrl}}"],
+              "path": ["weather"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Ahmedabad"
+                },
+                {
+                  "key": "unit",
+                  "value": "imperial"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.3 Get 5-Day Forecast",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/weather/forecast?city=Ahmedabad&unit=metric",
+              "host": ["{{baseUrl}}"],
+              "path": ["weather", "forecast"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Ahmedabad"
+                },
+                {
+                  "key": "unit",
+                  "value": "metric"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.4 Test Invalid City Name (Error Handling)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/weather?city=InvalidCityXYZ12345&unit=metric",
+              "host": ["{{baseUrl}}"],
+              "path": ["weather"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "InvalidCityXYZ12345"
+                },
+                {
+                  "key": "unit",
+                  "value": "metric"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.5 Test Empty City Name (Validation)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/weather?city=",
+              "host": ["{{baseUrl}}"],
+              "path": ["weather"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Favourites CRUD",
+      "item": [
+        {
+          "name": "3.1 Get All Favourites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/favourites",
+              "host": ["{{baseUrl}}"],
+              "path": ["favourites"]
+            }
+          }
+        },
+        {
+          "name": "3.2 Add Favourite City",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.data && response.data._id) {",
+                  "    pm.collectionVariables.set('favouriteId', response.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cityName\": \"Ahmedabad\",\n  \"country\": \"India\",\n  \"latitude\": 23.0225,\n  \"longitude\": 72.5714\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/favourites",
+              "host": ["{{baseUrl}}"],
+              "path": ["favourites"]
+            }
+          }
+        },
+        {
+          "name": "3.3 Update Favourite City",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"state\": \"Gujarat\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/favourites/{{favouriteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["favourites", "{{favouriteId}}"]
+            }
+          }
+        },
+        {
+          "name": "3.4 Delete Favourite City",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/favourites/{{favouriteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["favourites", "{{favouriteId}}"]
+            }
+          }
+        },
+        {
+          "name": "3.5 Test Unauthorized Request (No Token)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favourites",
+              "host": ["{{baseUrl}}"],
+              "path": ["favourites"]
+            }
+          }
+        },
+        {
+          "name": "3.6 Test Invalid Favourite ID",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/favourites/invalid_mongo_id_123",
+              "host": ["{{baseUrl}}"],
+              "path": ["favourites", "invalid_mongo_id_123"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
